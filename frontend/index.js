@@ -9,10 +9,17 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   // ❗ Use the variables `mentors` and `learners` to store the data.
   // ❗ Use the await keyword when using axios.
 
-  let mentors = [] // fix this
-  let learners = [] // fix this
+  let mentorsRes = await axios.get(`http://localhost:3003/api/mentors`)
+  let learnersRes = await axios.get(`http://localhost:3003/api/learners`)
+
+  const mentors = mentorsRes.data
+  const learners = learnersRes.data
+
+  console.log(mentors)
+  console.log(learners)
 
   // 👆 ==================== TASK 1 END ====================== 👆
+
 
   // 👇 ==================== TASK 2 START ==================== 👇
 
@@ -29,11 +36,27 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   //   ]`
   // }
 
+  const formattedData = []
+  learners.forEach(learner => {
+    const result = {
+      ...learner,
+      mentors: learner.mentors.map(mID => {
+        const mentor = mentors.find(mentorObj => mentorObj.id == mID)
+        return mentor.firstName + " " + mentor.lastName
+      })
+    }
+    formattedData.push(result)
+  })
+  console.log(formattedData)
+
   // 👆 ==================== TASK 2 END ====================== 👆
 
   const cardsContainer = document.querySelector('.cards')
   const info = document.querySelector('.info')
   info.textContent = 'No learner is selected'
+
+
+
 
 
   // 👇 ==================== TASK 3 START ==================== 👇
@@ -47,11 +70,38 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
     // ❗ Fill each <li> with a mentor name, and append it to the <ul> mentorList.
     // ❗ Inspect the mock site closely to understand what the initial texts and classes look like!
 
+
+
+    // formattedData.forEach(learner =>{
+
     const card = document.createElement('div')
     const heading = document.createElement('h3')
     const email = document.createElement('div')
     const mentorsHeading = document.createElement('h4')
     const mentorsList = document.createElement('ul')
+    
+
+
+
+
+      card.appendChild(heading)
+      card.appendChild(email)
+      card.appendChild(mentorsHeading)
+      learner.mentors.forEach(mentorName => {
+        const li = document.createElement('li')
+        li.textContent = mentorName
+        mentorsList.appendChild(li)
+      })
+
+
+    card.classList.add('card')
+    heading.textContent = learner.fullName
+    email.textContent = learner.email
+    mentorsHeading.textContent = "Mentors"
+    mentorsHeading.classList.add("closed")
+
+
+
 
     // 👆 ==================== TASK 3 END ====================== 👆
 
@@ -61,6 +111,8 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
     card.appendChild(mentorsList)
     card.dataset.fullName = learner.fullName
     cardsContainer.appendChild(card)
+
+
 
     card.addEventListener('click', evt => {
       const mentorsHeading = card.querySelector('h4')
@@ -98,12 +150,14 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
       }
     })
   }
-
+    
   const footer = document.querySelector('footer')
   const currentYear = new Date().getFullYear()
   footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`
 }
 
+
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
 if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
 else sprintChallenge5()
+
